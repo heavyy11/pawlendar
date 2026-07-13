@@ -1,0 +1,137 @@
+const db = require("../config/db");
+
+exports.createGroomer = (req, res) => {
+
+    const {
+        branch_id,
+        first_name,
+        last_name,
+        email,
+        phone_number,
+        specialization,
+        hire_date,
+        max_daily_appointments
+    } = req.body;
+
+    const sql = `
+        INSERT INTO groomer 
+        (
+            branch_id,
+            first_name,
+            last_name,
+            email,
+            phone_number,
+            specialization,
+            hire_date,
+            max_daily_appointments
+        ) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+
+    db.query(
+        sql,
+        [
+            branch_id,
+            first_name,
+            last_name,
+            email,
+            phone_number,
+            specialization,
+            hire_date,
+            max_daily_appointments
+        ],
+        (err, result) => {
+            if (err) {
+                return res.status(500).json({
+                    error: err.message
+                });
+            }
+
+            res.status(201).json({
+                message: "Groomer created successfully",
+                groomer_id: result.insertId
+            });
+        }
+    );
+
+}
+
+// gets all groomers (woah)
+exports.getGroomers = (req, res) => {
+
+    const sql = `
+        SELECT
+            groomer_id,
+            branch_id,
+            first_name,
+            last_name,
+            email,
+            phone_number,
+            specialization,
+            hire_date,
+            max_daily_appointments,
+            active_flag,
+            created_at,
+            updated_at
+        FROM groomer
+        WHERE active_flag = TRUE;
+    `;
+
+    db.query(sql, (err, results) => {
+
+        if (err) {
+            return res.status(500).json({
+                error: err.message
+            });
+        }
+
+        res.json(results);
+
+    });
+
+};
+// if admin accounts should only be able to modify groomers in their own branch i'll have to add like
+// AND branch_id = ?
+
+exports.getGroomerByID = (req, res) => {
+
+    const { id } = req.params;
+
+    const sql = `
+        SELECT
+            groomer_id,
+            branch_id,
+            first_name,
+            last_name,
+            email,
+            phone_number,
+            specialization,
+            hire_date,
+            max_daily_appointments,
+            active_flag,
+            created_at,
+            updated_at
+        FROM groomer
+        WHERE branch_id = ? AND
+        WHERE active_flag = TRUE;
+    `;
+
+    db.query(sql, (err, results) => {
+
+        if (err) {
+            return res.status(500).json({
+                error: err.message
+            });
+        }
+
+        if (results.length === 0) {
+            return res.status(404).json({
+                message: "Groomer not found"
+            });
+        }
+
+        res.json(results[0]);
+
+    });
+
+}
