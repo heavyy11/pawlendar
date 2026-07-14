@@ -13,7 +13,7 @@ exports.createGroomer = (req, res) => {
     } = req.body;
 
     const sql = `
-        INSERT INTO groomer 
+        INSERT INTO staff 
         (
             first_name,
             last_name,
@@ -69,7 +69,7 @@ exports.getGroomers = (req, res) => {
             active_flag,
             created_at,
             updated_at
-        FROM groomer
+        FROM staff
         WHERE active_flag = TRUE;
     `;
 
@@ -104,7 +104,7 @@ exports.getGroomerByID = (req, res) => {
             active_flag,
             created_at,
             updated_at
-        FROM groomer
+        FROM staff
         WHERE active_flag = TRUE;
     `;
 
@@ -142,7 +142,7 @@ exports.updateGroomer = (req, res) => {
     } = req.body;
 
     const sql = `
-        UPDATE groomer
+        UPDATE staff
             SET first_name = ?,
             last_name = ?,
             email = ?,
@@ -189,7 +189,7 @@ exports.updateGroomer = (req, res) => {
 exports.deactivateGroomer = (req, res) => {
     const {id} = req.params;
 
-    const sql = "UPDATE groomer SET active_flag = FALSE, updated_at = NOW() WHERE staff_id = ?";
+    const sql = "UPDATE staff SET active_flag = FALSE, updated_at = NOW() WHERE staff_id = ?";
 
     db.query(sql, [id], (err, result) => {
         if (err) {
