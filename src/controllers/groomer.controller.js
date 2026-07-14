@@ -130,7 +130,7 @@ exports.getGroomerByID = (req, res) => {
 
 }
 
-exports.updatePet = (req, res) => {
+exports.updateGroomer = (req, res) => {
     const {id} = req.params;
     const {
         first_name,
@@ -188,7 +188,7 @@ exports.updatePet = (req, res) => {
     );
 };
 
-exports.deletePet = (req, res) => {
+exports.deactivateGroomer = (req, res) => {
     const {id} = req.params;
 
     const sql = "UPDATE groomer SET active_flag = FALSE, updated_at = NOW() WHERE staff_id = ?";
