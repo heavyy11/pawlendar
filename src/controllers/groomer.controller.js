@@ -86,8 +86,6 @@ exports.getGroomers = (req, res) => {
     });
 
 };
-// if admin accounts should only be able to modify groomers in their own branch i'll have to add like
-// AND branch_id = ?
 
 exports.getGroomerByID = (req, res) => {
 
@@ -145,14 +143,14 @@ exports.updateGroomer = (req, res) => {
 
     const sql = `
         UPDATE groomer
-            SET first_name,
-            last_name,
-            email,
-            phone_number,
-            specialization,
-            hire_date,
-            max_daily_appointments,
-            active_flag
+            SET first_name = ?,
+            last_name = ?,
+            email = ?,
+            phone_number = ?,
+            specialization = ?,
+            hire_date = ?,
+            max_daily_appointments = ?,
+            active_flag = ?
         WHERE staff_id = ?
         `;
 
