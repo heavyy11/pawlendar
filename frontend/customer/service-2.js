@@ -32,14 +32,18 @@ if (!authPages.includes(currentPage)) {
     sessionStorage.setItem("lastPage", window.location.href);
 }
 
-document.getElementById("backBtn").addEventListener("click", function (e) {
-    e.preventDefault();
+const backBtn = document.getElementById("backBtn");
 
-    const lastPage = sessionStorage.getItem("lastPage");
+if (backBtn) {
+    backBtn.addEventListener("click", function(e) {
+        e.preventDefault();
 
-    if (lastPage) {
-        window.location.href = lastPage;
-    } else {
-        window.location.href = "index.html";
-    }
-});
+        const lastPage = sessionStorage.getItem("lastPage");
+
+        if (lastPage) {
+            window.location.href = lastPage;
+        } else {
+            window.location.href = "index.html";
+        }
+    });
+}
