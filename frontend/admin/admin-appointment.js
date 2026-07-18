@@ -118,7 +118,28 @@ function displayAppointments(appointments){
 
 
             <td>
-                ${app.payment_status}
+
+                <select
+                    onchange="changePaymentStatus(${app.appointment_id}, this.value)"
+                    ${app.status !== "Completed" ? "disabled" : ""}
+                >
+
+                    <option
+                        value="Pending"
+                        ${app.payment_status === "Pending" ? "selected" : ""}
+                    >
+                        Pending
+                    </option>
+
+                    <option
+                        value="Paid"
+                        ${app.payment_status === "Paid" ? "selected" : ""}
+                    >
+                        Paid
+                    </option>
+
+                </select>
+
             </td>
 
 
@@ -330,5 +351,42 @@ async function cancelAppointment(id){
     alert(data.message);
 
     loadAppointments();
+
+}
+
+async function changePaymentStatus(id, paymentStatus){
+
+    const response = await fetch(
+
+        `/api/admin/appointments/${id}/payment`,
+
+        {
+
+            method:"PUT",
+
+            headers:{
+                "Content-Type":"application/json",
+                "Authorization":"Bearer " + token
+            },
+
+            body:JSON.stringify({
+
+                payment_status: paymentStatus
+
+            })
+
+        }
+
+    );
+
+    const data = await response.json();
+
+    if(!response.ok){
+
+        alert(data.message || "Failed to update payment status");
+
+        return;
+
+    }
 
 }

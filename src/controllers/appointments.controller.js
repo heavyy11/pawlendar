@@ -48,13 +48,13 @@ exports.bookAppointment = async (req, res) => {
         const appointmentDate = new Date(start_datetime);
 
         const minimumBookingTime = new Date();
-        minimumBookingTime.setMinutes(
-            minimumBookingTime.getMinutes() + 30
+        minimumBookingTime.setHours(
+            minimumBookingTime.getHours() + 5
         );
 
         if (appointmentDate < minimumBookingTime) {
             return res.status(400).json({
-                message: "Appointments must be booked at least 30 minutes in advance."
+                message: "Appointments must be booked at least 5 hours in advance."
             });
         }
         
@@ -63,6 +63,50 @@ exports.bookAppointment = async (req, res) => {
             return res.status(400).json({
                 message: "Please select at least one service or package."
             });
+
+        }
+
+        if (service_ids.length > 0 && package_ids.length > 0) {
+
+            const packageServices = await new Promise((resolve, reject) => {
+
+                db.query(
+                    `
+                    SELECT
+                        ps.service_id,
+                        sm.service_name
+                    FROM package_services ps
+                    JOIN service_menu sm
+                        ON ps.service_id = sm.service_id
+                    WHERE ps.package_id IN (?)
+                    `,
+                    [package_ids],
+                    (err, results) => {
+
+                        if (err) return reject(err);
+
+                        resolve(results);
+
+                    }
+                );
+
+            });
+
+            const duplicateServices = packageServices.filter(service =>
+                service_ids.includes(service.service_id)
+            );
+
+            if (duplicateServices.length > 0) {
+
+                return res.status(400).json({
+
+                    message: "Some selected services are already included in the selected package(s).",
+
+                    duplicates: duplicateServices
+
+                });
+
+            }
 
         }
 
@@ -75,6 +119,21 @@ exports.bookAppointment = async (req, res) => {
 
         const endDatetime = appointmentInfo.endDatetime;
         const total_price = appointmentInfo.totalPrice;
+
+        const openingTime = new Date(start_datetime);
+        openingTime.setHours(10, 0, 0, 0);
+
+        const closingTime = new Date(start_datetime);
+        closingTime.setHours(19, 0, 0, 0);
+
+        if (
+            new Date(start_datetime) < openingTime ||
+            endDatetime > closingTime
+        ) {
+            return res.status(400).json({
+                message: "Appointment must be within business hours (10:00 AM - 7:00 PM)."
+            });
+        }
         
 
         // Find available staff
@@ -625,29 +684,25 @@ exports.updateStatus = (req, res) => {
 
 };
 
-exports.cancelAppointment = (req, res) => {
+exports.updatePaymentStatus = (req, res) => {
 
     const { id } = req.params;
-    const user_id = req.user.user_id;
+    const { payment_status } = req.body;
 
-
-    const sql = `
-        UPDATE appointments a
-        JOIN pet p 
-        ON a.pet_id = p.pet_id
-
-        SET a.status = 'Cancelled'
-
-        WHERE a.appointment_id = ?
-        AND p.user_id = ?
-        AND a.status NOT IN ('Completed', 'Cancelled')
-    `;
-
+    if (!["Pending", "Paid"].includes(payment_status)) {
+        return res.status(400).json({
+            message: "Invalid payment status."
+        });
+    }
 
     db.query(
-        sql,
-        [id, user_id],
-        (err, result) => {
+        `
+        SELECT status
+        FROM appointments
+        WHERE appointment_id = ?
+        `,
+        [id],
+        (err, results) => {
 
             if (err) {
                 return res.status(500).json({
@@ -655,20 +710,119 @@ exports.cancelAppointment = (req, res) => {
                 });
             }
 
-
-            if(result.affectedRows === 0){
+            if (results.length === 0) {
                 return res.status(404).json({
-                    message:"Appointment not found or does not belong to you"
+                    message: "Appointment not found."
                 });
             }
 
+            if (results[0].status !== "Completed") {
+                return res.status(400).json({
+                    message: "Payment can only be recorded after the appointment is completed."
+                });
+            }
 
-            res.json({
-                message:"Appointment cancelled successfully"
-            });
+            db.query(
+                `
+                UPDATE appointments
+                SET payment_status = ?
+                WHERE appointment_id = ?
+                `,
+                [payment_status, id],
+                (err) => {
+
+                    if (err) {
+                        return res.status(500).json({
+                            error: err.message
+                        });
+                    }
+
+                    res.json({
+                        message: "Payment status updated successfully."
+                    });
+
+                }
+            );
 
         }
     );
+
+};
+
+exports.cancelAppointment = (req, res) => {
+
+    const { id } = req.params;
+    const user_id = req.user.user_id;
+
+    const getAppointmentSql = `
+        SELECT a.start_datetime
+        FROM appointments a
+        JOIN pet p
+            ON a.pet_id = p.pet_id
+        WHERE a.appointment_id = ?
+        AND p.user_id = ?
+        AND a.status NOT IN ('Completed', 'Cancelled')
+    `;
+
+    db.query(getAppointmentSql, [id, user_id], (err, results) => {
+
+        if (err) {
+            return res.status(500).json({
+                error: err.message
+            });
+        }
+
+        if (results.length === 0) {
+            return res.status(404).json({
+                message: "Appointment not found or does not belong to you"
+            });
+        }
+
+        const appointmentTime = new Date(results[0].start_datetime);
+
+        const fiveHoursBefore = new Date(appointmentTime);
+        fiveHoursBefore.setHours(
+            fiveHoursBefore.getHours() - 5
+        );
+
+        if (new Date() > fiveHoursBefore) {
+            return res.status(400).json({
+                message: "Appointments can only be cancelled at least 5 hours before."
+            });
+        }
+
+        const sql = `
+            UPDATE appointments a
+            JOIN pet p
+                ON a.pet_id = p.pet_id
+            SET a.status = 'Cancelled'
+            WHERE a.appointment_id = ?
+            AND p.user_id = ?
+            AND a.status NOT IN ('Completed', 'Cancelled')
+        `;
+
+        db.query(sql, [id, user_id], (err, result) => {
+
+            if (err) {
+                return res.status(500).json({
+                    error: err.message
+                });
+            }
+
+            if (result.affectedRows === 0) {
+                return res.status(404).json({
+                    message: "Appointment not found or does not belong to you"
+                });
+            }
+
+            res.json({
+                message: "Appointment cancelled successfully"
+            });
+
+        });
+
+    });
+
 };
 
 exports.adminCancelAppointment = (req, res) => {
