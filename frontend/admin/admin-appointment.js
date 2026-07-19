@@ -1,6 +1,6 @@
 const token = localStorage.getItem("token");
 if (!token) {
-    window.location.replace("../public/login.html");
+    window.location.href = "/admin";
 }
 
 loadAppointments();
@@ -279,36 +279,23 @@ function filterAppointments(){
 
         let matchesDate = true;
 
-        if (dateFilter === "today") {
-
-            const today = new Date();
-
-            filtered = filtered.filter(app => {
-
-                const appDate = new Date(app.start_datetime);
-
-                return (
-                    appDate.getFullYear() === today.getFullYear() &&
-                    appDate.getMonth() === today.getMonth() &&
-                    appDate.getDate() === today.getDate()
-                );
-
-            });
-
-        }
-
-        else if(date==="week"){
-
-            const diff =
-            (appDate - today) /
-            (1000*60*60*24);
+        if (date === "today") {
 
             matchesDate =
-            diff>=0 && diff<=7;
+                appDate.getFullYear() === today.getFullYear() &&
+                appDate.getMonth() === today.getMonth() &&
+                appDate.getDate() === today.getDate();
 
         }
+        else if (date === "week") {
 
-        else if(date==="month"){
+            const diff =
+                (appDate - today) / (1000 * 60 * 60 * 24);
+
+            matchesDate = diff >= 0 && diff <= 7;
+
+        }
+        else if (date === "month") {
 
             matchesDate =
                 appDate.getMonth() === today.getMonth() &&
@@ -557,24 +544,4 @@ document.querySelectorAll(".nav-list a").forEach(link => {
     if (link.getAttribute("href") === currentPage) {
         link.classList.add("active");
     }
-});
-
-const logoutBtn = document.getElementById("logoutBtn");
-
-logoutBtn.addEventListener("click", (e) => {
-
-    e.preventDefault();
-
-    const confirmed = confirm("Are you sure you want to log out?");
-
-    if (!confirmed) return;
-
-    localStorage.removeItem("token");
-
-    // remove anything else you may store later
-    localStorage.removeItem("owner");
-    localStorage.removeItem("admin");
-
-    window.location.href = "../public/login.html";
-
 });
