@@ -21,7 +21,7 @@ exports.createGroomer = (req, res) => {
             specialization,
             hire_date
         ) 
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?)
     `;
 
     db.query(
@@ -122,61 +122,89 @@ exports.getGroomerById = (req, res) => {
     });
 
 }
-
 exports.updateGroomer = (req, res) => {
-    const {id} = req.params;
+
+    const { id } = req.params;
+
+
     const {
         first_name,
         last_name,
         email,
         phone_number,
         specialization,
-        hire_date,
-        active_flag
+        hire_date
     } = req.body;
+
+
 
     const sql = `
         UPDATE staff
-            SET first_name = ?,
+        SET
+            first_name = ?,
             last_name = ?,
             email = ?,
             phone_number = ?,
             specialization = ?,
             hire_date = ?,
-            active_flag = ?
+            updated_at = NOW()
+
         WHERE staff_id = ?
-        `;
+    `;
+
+
 
     db.query(
         sql,
+
         [
             first_name,
             last_name,
-            email,
+            email || null,
             phone_number,
             specialization,
             hire_date,
-            active_flag,
             id
         ],
-        (err, result) => {
-            if (err) {
+
+        (err, result)=>{
+
+
+            if(err){
+
                 return res.status(500).json({
+
                     error: err.message
+
                 });
+
             }
 
-            if (result.affectedRows === 0) {
+
+
+            if(result.affectedRows === 0){
+
                 return res.status(404).json({
-                    message: "Groomer not found"
+
+                    message:"Groomer not found"
+
                 });
+
             }
+
+
 
             res.json({
-                message: "Groomer updated successfully"
+
+                message:"Groomer updated successfully"
+
             });
+
+
         }
+
     );
+
 };
 
 exports.deactivateGroomer = (req, res) => {
