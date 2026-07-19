@@ -9,6 +9,7 @@
     <title>Pawlendar | Dashboard</title>
 
     <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="sidebar.css">
     <link rel="stylesheet" href="appointments-menu.css">
 
     <link rel="stylesheet"
@@ -23,7 +24,7 @@
 
         <!-- SIDEBAR -->
 
-        <aside class="sidebar">
+        <<aside class="sidebar">
 
             <div class="sidebar-profile">
 
@@ -115,29 +116,51 @@
 
                     <div class="appointments-grid">
 
-                        <div class="appointment-card">
-                            <h3>July 20, 2026</h3>
-                            <p>9:00 AM – 10:00 AM</p>
+                        <div class="ticket-card">
+                            <div class="ticket-stub">
+                                <span class="stub-label">Pet</span>
 
-                            <hr>
+                                <div class="stub-heading">
+                                    <h3>Bruno</h3>
 
-                            <p><strong>Pet:</strong> Bruno</p>
-                            <p><strong>Groomer:</strong> John Smith</p>
-                            <p><strong>Total:</strong> ₱650.00</p>
-                            <p><strong>Payment:</strong> Pending</p>
-
-                            <span class="status pending">Scheduled</span>
-
-                            <div class="appointment-actions">
-                                <button class="primary-btn">View</button>
-                                <button
-                                    class="secondary-btn"
-                                    data-id="${appointment.appointment_id}">
+                                    <span class="stamp pending">
+                                        Scheduled
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="ticket-perf"></div>
+                            <div class="ticket-details">
+                                <dl>
+                                    <div>
+                                        <dt>Date</dt>
+                                        <dd>July 20, 2026</dd>
+                                    </div>
+                                    <div>
+                                        <dt>Time</dt>
+                                        <dd>9:00 AM</dd>
+                                    </div>
+                                    <div>
+                                        <dt>Groomer</dt>
+                                        <dd>Miles Garcia</dd>
+                                    </div>
+                                    <div>
+                                        <dt>Total</dt>
+                                        <dd>₱650</dd>
+                                    </div>
+                                    <div>
+                                        <dt>Payment</dt>
+                                        <dd>Pending</dd>
+                                    </div>
+                                </dl>
+                            </div>
+                            <div class="ticket-actions">
+                                <button class="btn-outline">
+                                    View
+                                </button>
+                                <button class="btn-text-danger" data-id="${appointment.appointment_id}">
                                     Cancel
                                 </button>
                             </div>
-                        </div>
-
                         </div>
 
                     </div>

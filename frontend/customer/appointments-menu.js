@@ -112,61 +112,99 @@ document.addEventListener("DOMContentLoaded", () => {
         if (upcoming.length === 0) {
 
             container.innerHTML = `
-                <div class="appointment-card">
-                    <p>No upcoming appointments.</p>
-                </div>
-            `;
+                    <div class="appointment-card">
+                        <p>No upcoming appointments.</p>
+                    </div>
+                `;
 
-            return;
-        }
+                return;
+            }
 
-        upcoming.forEach(appointment => {
+            upcoming.forEach(appointment => {
 
-            const card = document.createElement("div");
+                const card = document.createElement("div");
 
-            card.className = "appointment-card";
+                card.className = "appointment-card";
 
-            const date = new Date(appointment.start_datetime);
+                const date = new Date(appointment.start_datetime);
 
-            const groomer =
-                appointment.staff_first_name && appointment.staff_last_name
-                    ? `${appointment.staff_first_name} ${appointment.staff_last_name}`
-                    : "Not assigned";
+                const groomer =
+                    appointment.staff_first_name && appointment.staff_last_name
+                        ? `${appointment.staff_first_name} ${appointment.staff_last_name}`
+                        : "Not assigned";
 
-            card.innerHTML = `
-                <h3>${date.toLocaleDateString()}</h3>
+                card.innerHTML = `
+                    <div class="ticket-card">
 
-                <p>
-                    <strong>Time:</strong>
-                    ${date.toLocaleTimeString([], {
-                        hour: "numeric",
-                        minute: "2-digit"
-                    })}
-                </p>
+                        <div class="ticket-stub">
 
-                <p>
-                    <strong>Pet:</strong>
-                    ${appointment.pet_name}
-                </p>
+                            <span class="stub-label">
+                                Pet
+                            </span>
 
-                <p>
-                    <strong>Groomer:</strong>
-                    ${groomer}
-                </p>
+                            <div class="stub-heading">
 
-                <p>
-                    <strong>Total:</strong>
-                    ₱${Number(appointment.total_price).toFixed(2)}
-                </p>
+                                <h3>${appointment.pet_name}</h3>
 
-                <p>
-                    <strong>Payment:</strong>
-                    ${appointment.payment_status}
-                </p>
+                                <span class="stamp ${getStatusClass(appointment.status)}">
+                                    ${appointment.status}
+                                </span>
 
-                <span class="status ${getStatusClass(appointment.status)}">
-                    ${appointment.status}
-                </span>
+                            </div>
+
+                        </div>
+
+                        <div class="ticket-perf"></div>
+
+                        <div class="ticket-details">
+
+                            <dl>
+
+                                <div>
+                                    <dt>Date</dt>
+                                    <dd>${date.toLocaleDateString()}</dd>
+                                </div>
+
+                                <div>
+                                    <dt>Time</dt>
+                                    <dd>${date.toLocaleTimeString([], {
+                                        hour: "numeric",
+                                        minute: "2-digit"
+                                    })}</dd>
+                                </div>
+
+                                <div>
+                                    <dt>Groomer</dt>
+                                    <dd>${groomer}</dd>
+                                </div>
+
+                                <div>
+                                    <dt>Total</dt>
+                                    <dd>₱${Number(appointment.total_price).toFixed(2)}</dd>
+                                </div>
+
+                                <div>
+                                    <dt>Payment</dt>
+                                    <dd>${appointment.payment_status}</dd>
+                                </div>
+
+                            </dl>
+
+                        </div>
+
+                        <div class="ticket-actions">
+
+                            <button class="btn-outline">
+                                View
+                            </button>
+
+                            <button class="btn-text-danger">
+                                Cancel
+                            </button>
+
+                        </div>
+
+                    </div>
             `;
 
             container.appendChild(card);
