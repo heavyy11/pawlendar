@@ -1,126 +1,244 @@
 <!DOCTYPE html>
 <html lang="en">
 
-    <head>
+<head>
 
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        <title>Pawlendar | Staff Management</title>
+    <title>Pawlendar | Staff Management</title>
 
-        <link rel="stylesheet" href="../navbar.css">
-        <link rel="stylesheet" href="admin-staff.css">
-        <link rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
-    </head>
+    <link rel="stylesheet" href="../navbar.css">
+    <link rel="stylesheet" href="../paw-pattern.css">
+    <link rel="stylesheet" href="admin-staff.css">
 
-    <body>
+</head>
 
-    <div id="app" style="display:none;">
 
-        <header class="navbar">
+<body>
 
-            <a href="admin-dashboard.html" class="brand brand-dark">
-                <span>Pawlendar</span>
+
+<div id="app" style="display:none;">
+
+
+    <header class="navbar">
+
+        <a href="admin-dashboard.html" class="brand brand-dark">
+
+            <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
+
+                <ellipse cx="15" cy="18" rx="6.5" ry="5.5" fill="var(--clay)" />
+
+                <circle cx="8.5" cy="9.5" r="3" fill="var(--clay)" />
+
+                <circle cx="15" cy="6.5" r="3" fill="var(--clay)" />
+
+                <circle cx="21.5" cy="9.5" r="3" fill="var(--clay)" />
+
+            </svg>
+
+            <span>Pawlendar</span>
+
+        </a>
+
+
+
+        <nav class="nav-list">
+
+            <a href="admin-dashboard.html">Dashboard</a>
+
+            <a href="admin-appointment.html">Appointments</a>
+
+            <a href="admin-calendar.html">Calendar</a>
+
+            <a href="admin-services.html">Services</a>
+
+            <a href="admin-staff.html">Staff</a>
+
+        </nav>
+
+
+
+        <div class="nav-auth">
+
+            <a href="#" id="logoutBtn" class="btn-ghost-small">
+                Logout
             </a>
 
-            <nav class="nav-list">
+        </div>
 
-                <a href="admin-dashboard.html">Dashboard</a>
-                <a href="admin-appointment.html">Appointments</a>
-                <a href="admin-calendar.html">Calendar</a>
-                <a href="admin-services.html">Services</a>
-                <a href="admin-staff.html">Staff</a>
 
-            </nav>
+    </header>
 
-            <div class="nav-auth">
-                <a href="#" id="logoutBtn" class="btn-ghost-small">Logout</a>
+
+
+
+    <!-- HERO -->
+
+    <section class="services-hero paws-bg">
+
+
+        <div class="services-content">
+
+
+            <h1>
+                Staff Management
+            </h1>
+
+
+            <p>
+                Manage groomers, their information, and weekly availability.
+            </p>
+
+
+            <a href="admin-staff-form.html" class="add-service-btn">
+
+                <i class="fa-solid fa-plus"></i>
+
+                Add New Groomer
+
+            </a>
+
+
+        </div>
+
+
+    </section>
+
+
+
+
+
+    <!-- STAFF TABLE -->
+
+    <section class="services-wrapper">
+
+
+        <div class="services-card">
+
+
+            <div class="services-title">
+
+
+                <h2>
+                    Groomers
+                </h2>
+
+
+                <span id="staffCount">
+                    0 Groomers
+                </span>
+
+
             </div>
 
-        </header>
-
-
-        <section class="appointments-hero paws-bg">
-
-            <div class="appointments-hero-content">
-
-                <h1>Staff Management</h1>
-
-                <p>
-                    View groomers and their weekly availability.
-                </p>
-
-            </div>
-
-        </section>
 
 
 
-        <section class="services-hero paws-bg">
+            <div class="staff-search">
 
-            <h2>Groomers</h2>
-
-            <div class="appointment-filters">
 
                 <input
-                type="text"
-                id="searchInput"
-                placeholder="Search groomer...">
+                    type="text"
+                    id="searchInput"
+                    placeholder="Search groomer..."
+                >
 
-                <a href="admin-staff-form.html" id="addBtn" class="main-btn">
-                    <i class="fa fa-plus"></i>
-
-                    Add Groomer
-
-                </a>
 
             </div>
 
 
-            <div class="table-container">
 
-                <table class="appointment-table">
+
+
+            <table class="services-table">
+
 
                 <thead>
 
+
                     <tr>
 
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Specialization</th>
-                    <th>Phone</th>
-                    <th>Email</th>
-                    <th>Action</th>
+                        <th>ID</th>
+
+                        <th>Name</th>
+
+                        <th>Specialization</th>
+
+                        <th>Phone</th>
+
+                        <th>Email</th>
+
+                        <th>Actions</th>
 
                     </tr>
 
+
                 </thead>
 
-                <tbody id="staffTableBody"></tbody>
 
-                </table>
+
+                <tbody id="staffTableBody">
+
+
+                </tbody>
+
+
+
+            </table>
+
+
+
+        </div>
+
+
+    </section>
+
+
+
+
+
+
+    <!-- DETAILS -->
+
+    <section 
+        id="staffDetails"
+        style="display:none;"
+        class="services-wrapper">
+
+
+        <div class="services-card">
+
+
+            <h2>
+                Groomer Details
+            </h2>
+
+
+            <div id="detailsContainer">
+
 
             </div>
 
-            </section>
 
 
-            <section
-            id="staffDetails"
-            style="display:none;"
-            class="appointments-dashboard">
+        </div>
 
-            <h2>Groomer Details</h2>
 
-            <div id="detailsContainer"></div>
+    </section>
 
-        </section>
 
-    </div>
 
-    <script src="admin-staff.js"></script>
 
-    </body>
+</div>
+
+
+
+<script src="admin-staff.js"></script>
+
+
+</body>
+
 </html>
